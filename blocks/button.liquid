@@ -1,0 +1,45 @@
+<a
+  href="{{ block.settings.link }}"
+  class="custom-button {{ block.settings.custom_class }}"
+  style="
+    background-color: {{ block.settings.bg_color }};
+    color: {{ block.settings.text_color }};
+  "
+>
+  {{ block.settings.text }}
+</a>
+
+<style>
+  .custom-button {
+    padding: 10px 18px;
+    display: inline-block;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.2s ease;
+  }
+
+  .custom-button:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Button Block",
+  "settings": [
+    { "type": "text", "id": "text", "label": "Button Text", "default": "Click Here" },
+    { "type": "url", "id": "link", "label": "Button Link" },
+    { "type": "color", "id": "bg_color", "label": "BackgroundColor", "default": "#000000" },
+    { "type": "color", "id": "text_color", "label": "Text Color", "default": "#ffffff" },
+    {
+      "type": "text",
+      "id": "custom_class",
+      "label": "Custom CSS Class"
+    }
+  ],
+  "presets": [{ "name": "Button Block" }]
+}
+{% endschema %}

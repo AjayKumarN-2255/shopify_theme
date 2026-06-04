@@ -1,0 +1,36 @@
+<section class="container">
+  {% for block in section.blocks %}
+    <div {{ block.shopify_attributes }}>
+      {% case block.type %}
+        {% when 'page_content' %}
+          <div class="page-content rte">
+            {{ page.content }}
+          </div>
+      {% endcase %}
+    </div>
+  {% endfor %}
+  {% content_for 'blocks' %}
+</section>
+
+{% schema %}
+{
+  "name": "Main Page Builder",
+
+  "blocks": [
+    {
+      "type": "page_content",
+      "name": "Page Content"
+    },
+    {
+      "type": "@theme",
+      "settings": []
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "Page Builder"
+    }
+  ]
+}
+{% endschema %}
