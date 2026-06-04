@@ -1,0 +1,187 @@
+{% assign related_collection = product.collections.first %}
+
+{% if related_collection and related_collection.products.size > 1 %}
+  <section class="related-products-section" style="background: {{ section.settings.bg_color }};">
+    <div class="page-width">
+      <h2 class="related-products-heading">
+        {{ section.settings.heading }}
+      </h2>
+
+      <div class="related-products-grid">
+        {% for p in related_collection.products limit: section.settings.products_to_show %}
+          {% if p.id != product.id %}
+            <article class="related-product-card">
+              <a href="{{ p.url }}" class="related-product-link">
+                {% if p.featured_image %}
+                  <div class="related-product-image">
+                    {{ p.featured_image | image_url: width: 600 | image_tag: loading: 'lazy', alt: p.title }}
+                  </div>
+                {% endif %}
+
+                <div class="related-product-content">
+                  <h3 class="related-product-title">
+                    {{ p.title }}
+                  </h3>
+
+                  {% if section.settings.show_vendor %}
+                    <p class="related-product-vendor">
+                      {{ p.vendor }}
+                    </p>
+                  {% endif %}
+
+                  <p class="related-product-price">
+                    {{ p.price | money }}
+                  </p>
+                </div>
+              </a>
+            </article>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+<style>
+  .related-products-section {
+    padding: 60px 0;
+  }
+
+  .page-width {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0; /* ✅ container padding fix */
+  }
+
+  .related-products-heading {
+    font-size: 32px;
+    margin-bottom: 32px;
+  }
+
+  .related-products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  /* ✅ FIX: Equal height cards */
+  .related-product-card {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  /* link takes full height */
+  .related-product-link {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  /* ✅ FIX: Image container with fixed ratio */
+  .related-product-image {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* keeps all images same height */
+    overflow: hidden;
+    background: #f5f5f5;
+  }
+
+  /* image fill without stretching card */
+  .related-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* important */
+    display: block;
+    transition: transform 0.3s ease;
+  }
+
+  /* optional hover effect */
+  .related-product-card:hover img {
+    transform: scale(1.05);
+  }
+
+  /* content takes remaining space */
+  .related-product-content {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex-grow: 1;
+  }
+
+  .related-product-title {
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .related-product-vendor {
+    color: #666;
+    font-size: 14px;
+  }
+
+  .related-product-price {
+    font-weight: 600;
+    margin-top: auto; /* pushes price to bottom */
+  }
+
+  /* responsive */
+  @media screen and (max-width: 990px) {
+    .related-products-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .related-products-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Related products",
+  "templates": ["product"],
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "You may also like"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to show",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#FAF6F1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Related products"
+    }
+  ]
+}
+{% endschema %}

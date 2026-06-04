@@ -1,0 +1,328 @@
+<section class="custom-hero-section" id="hero-{{ section.id }}">
+
+    {% if section.settings.background_image != blank %}
+      <div
+        class="hero-bg-image-layer"
+        style="background-image: url('{{ section.settings.background_image | image_url: width: 1600 }}');">
+      </div>
+    {% else %}
+      <div class="hero-bg-fallback-layer"></div>
+    {% endif %}
+  
+    <div
+      class="hero-color-overlay"
+      style="background-color: rgba(70, 57, 51, {{ section.settings.overlay_opacity | divided_by: 100.0 }});">
+    </div>
+  
+    <div class="hero-content-container page-width">
+      <div class="hero-text-panel align-{{ section.settings.content_alignment }}">
+  
+        {% if section.settings.subheading_text != blank %}
+          <span class="hero-subheading-meta">
+            {{ section.settings.subheading_text | escape }}
+          </span>
+        {% endif %}
+  
+        {% if section.settings.heading_text != blank %}
+          <h1 class="hero-main-title">
+            {{ section.settings.heading_text | escape }}
+          </h1>
+        {% endif %}
+  
+        {% if section.settings.description_text != blank %}
+          <div class="hero-body-description">
+            {{ section.settings.description_text | escape | newline_to_br }}
+          </div>
+        {% endif %}
+  
+        {% if section.settings.button_label != blank and section.settings.button_link != blank %}
+          <div class="hero-action-row">
+            <a
+              href="{{ section.settings.button_link }}"
+              class="hero-cta-pill-btn"
+              aria-label="{{ section.settings.button_label | escape }}">
+              {{ section.settings.button_label | escape }}
+            </a>
+          </div>
+        {% endif %}
+  
+      </div>
+    </div>
+  
+  </section>
+  
+  <style>
+    #hero-{{ section.id }} {
+      min-height: {{ section.settings.hero_height_desktop }}vh;
+    }
+  
+    #hero-{{ section.id }} .hero-main-title {
+      color: {{ section.settings.color_text_heading }};
+    }
+  
+    #hero-{{ section.id }} .hero-subheading-meta {
+      color: {{ section.settings.color_text_accent }};
+    }
+  
+    #hero-{{ section.id }} .hero-body-description {
+      color: {{ section.settings.color_text_body }};
+    }
+  
+    #hero-{{ section.id }} .hero-cta-pill-btn {
+      background-color: {{ section.settings.color_btn_bg }};
+      color: {{ section.settings.color_btn_text }};
+    }
+  
+    #hero-{{ section.id }} .hero-cta-pill-btn:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+    }
+  
+    @media screen and (max-width: 768px) {
+      #hero-{{ section.id }} {
+        min-height: {{ section.settings.hero_height_mobile }}vh;
+      }
+    }
+  </style>
+  
+  <style>
+    .custom-hero-section {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      width: 100%;
+      box-sizing: border-box;
+    }
+  
+    .hero-bg-image-layer,
+    .hero-bg-fallback-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      z-index: 1;
+    }
+  
+    .hero-bg-fallback-layer {
+      background-color: #F7F3EB;
+    }
+  
+    .hero-color-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      transition: background-color 0.3s ease;
+    }
+  
+    .hero-content-container {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+      box-sizing: border-box;
+    }
+  
+    .hero-text-panel {
+      max-width: 650px;
+      display: flex;
+      flex-direction: column;
+    }
+  
+    .hero-text-panel.align-left {
+      margin-right: auto;
+      text-align: left;
+      align-items: flex-start;
+    }
+  
+    .hero-text-panel.align-center {
+      margin: 0 auto;
+      text-align: center;
+      align-items: center;
+    }
+  
+    .hero-text-panel.align-right {
+      margin-left: auto;
+      text-align: right;
+      align-items: flex-end;
+    }
+  
+    .hero-subheading-meta {
+      display: inline-block;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+  
+    .hero-main-title {
+      margin: 0 0 1.5rem;
+      font-size: clamp(2.25rem, 5vw, 4rem);
+      line-height: 1.15;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+  
+    .hero-body-description {
+      margin-bottom: 2.5rem;
+      font-size: clamp(1.05rem, 2vw, 1.25rem);
+      line-height: 1.6;
+    }
+  
+    .hero-action-row {
+      display: flex;
+    }
+  
+    .hero-cta-pill-btn {
+      display: inline-block;
+      padding: 1.1rem 2.75rem;
+      border-radius: 3rem;
+      font-size: 1.05rem;
+      font-weight: 700;
+      text-decoration: none;
+      text-align: center;
+      white-space: nowrap;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      transition:
+        transform 0.2s cubic-bezier(0.25, 1, 0.5, 1),
+        background-color 0.25s ease,
+        opacity 0.25s ease;
+    }
+  </style>
+  
+  {% schema %}
+  {
+    "name": "Dynamic Hero Showcase",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Visual Assets & Layout Setup"
+      },
+      {
+        "type": "image_picker",
+        "id": "background_image",
+        "label": "Hero Background Image"
+      },
+      {
+        "type": "range",
+        "id": "overlay_opacity",
+        "min": 0,
+        "max": 90,
+        "step": 5,
+        "unit": "%",
+        "label": "Overlay Shadow Intensity",
+        "default": 30
+      },
+      {
+        "type": "select",
+        "id": "content_alignment",
+        "label": "Text Framework Alignment",
+        "options": [
+          { "value": "left", "label": "Align Left" },
+          { "value": "center", "label": "Align Center" },
+          { "value": "right", "label": "Align Right" }
+        ],
+        "default": "center"
+      },
+      {
+        "type": "range",
+        "id": "hero_height_desktop",
+        "min": 40,
+        "max": 100,
+        "step": 5,
+        "unit": "vh",
+        "label": "Desktop Height",
+        "default": 75
+      },
+      {
+        "type": "range",
+        "id": "hero_height_mobile",
+        "min": 40,
+        "max": 100,
+        "step": 5,
+        "unit": "vh",
+        "label": "Mobile Height",
+        "default": 60
+      },
+      {
+        "type": "header",
+        "content": "Content"
+      },
+      {
+        "type": "text",
+        "id": "subheading_text",
+        "label": "Subheading",
+        "default": "NEW LUXURY ARRIVALS"
+      },
+      {
+        "type": "text",
+        "id": "heading_text",
+        "label": "Heading",
+        "default": "Elevate Your Space"
+      },
+      {
+        "type": "textarea",
+        "id": "description_text",
+        "label": "Description",
+        "default": "Discover our handpicked curation of organic premium goods crafted explicitly to complement lifestyle architectures."
+      },
+      {
+        "type": "text",
+        "id": "button_label",
+        "label": "Button Label",
+        "default": "Shop Collection"
+      },
+      {
+        "type": "url",
+        "id": "button_link",
+        "label": "Button Link"
+      },
+      {
+        "type": "header",
+        "content": "Colors"
+      },
+      {
+        "type": "color",
+        "id": "color_text_heading",
+        "label": "Heading Color",
+        "default": "#463933"
+      },
+      {
+        "type": "color",
+        "id": "color_text_accent",
+        "label": "Subheading Color",
+        "default": "#EC9343"
+      },
+      {
+        "type": "color",
+        "id": "color_text_body",
+        "label": "Body Text Color",
+        "default": "#FFFFFF"
+      },
+      {
+        "type": "color",
+        "id": "color_btn_bg",
+        "label": "Button Background",
+        "default": "#463933"
+      },
+      {
+        "type": "color",
+        "id": "color_btn_text",
+        "label": "Button Text",
+        "default": "#FFFFFF"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Dynamic Hero Showcase"
+      }
+    ]
+  }
+  {% endschema %}

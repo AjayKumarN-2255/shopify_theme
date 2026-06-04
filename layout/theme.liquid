@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {{ content_for_header }}
+
+    <style>
+
+      {{ settings.heading_font | font_face }}
+      {{ settings.body_font | font_face }}
+      
+        :root {
+          --font-heading: {{ settings.heading_font.family }}, sans-serif;
+          --font-body: {{ settings.body_font.family }}, sans-serif;
+        }
+
+        body {
+          font-family: var(--font-body);
+          margin: 0;
+          padding: 0;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+          font-family: var(--font-heading);
+        }
+    </style>
+  </head>
+
+  <body>
+    {% sections 'header-group' %}
+
+    {{ content_for_layout }}
+
+    {% sections 'footer-group' %}
+  </body>
+</html>

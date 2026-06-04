@@ -1,0 +1,97 @@
+<header class="site-header">
+
+  <div class="header-container">
+
+    <div class="logo">
+      <a href="{{ routes.root_url }}">
+        {{ shop.name }}
+      </a>
+    </div>
+
+    <nav class="nav-menu">
+
+      <ul>
+
+        {% for link in linklists.main-menu.links %}
+
+          <li>
+
+            <a href="{{ link.url }}">
+              {{ link.title }}
+            </a>
+
+          </li>
+
+        {% endfor %}
+
+      </ul>
+
+    </nav>
+
+  </div>
+
+</header>
+
+<style>
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+.site-header{
+  width:100%;
+  background:#f5f5f5;
+  border-bottom:1px solid #ddd;
+}
+
+.header-container{
+  max-width:1200px;
+  margin:auto;
+  padding:20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.logo a{
+  text-decoration:none;
+  font-size:28px;
+  font-weight:bold;
+  color:#000;
+}
+
+.nav-menu ul{
+  display:flex;
+  gap:30px;
+  list-style:none;
+}
+
+.nav-menu a{
+  text-decoration:none;
+  color:#000;
+  font-size:16px;
+  font-weight:600;
+}
+
+.nav-menu a:hover{
+  color:#666;
+}
+
+@media(max-width:768px){
+
+  .header-container{
+    flex-direction:column;
+    gap:20px;
+  }
+
+  .nav-menu ul{
+    flex-direction:column;
+    align-items:center;
+  }
+
+}
+
+</style>
+

@@ -1,0 +1,300 @@
+<section class="featured-collection-section" id="collection-{{ section.id }}">
+  <div class="page-width collection-container">
+
+    {% if section.settings.title != blank %}
+      <div class="collection-header-row">
+        <h2 class="collection-main-heading">{{ section.settings.title | escape }}</h2>
+      </div>
+    {% endif %}
+
+    {% assign target_collection = collections[section.settings.featured_collection] %}
+    {% assign products_limit = section.settings.products_to_show %}
+
+    <div class="collection-products-grid grid-cols-{{ section.settings.columns_desktop }}">
+      {% if target_collection != blank and target_collection.all_products_count > 0 %}
+        
+        {% for product in target_collection.products limit: products_limit %}
+          <div class="product-grid-item-card">
+            <a href="{{ product.url }}" class="product-card-link-mask">
+              <div class="product-card-image-wrap">
+                {% if product.featured_image != blank %}
+                  <img src="{{ product.featured_image | img_url: '500x500', crop: 'center' }}" 
+                       alt="{{ product.title | escape }}" 
+                       loading="lazy" 
+                       class="product-card-img">
+                {% else %}
+                  {{ 'product-1' | placeholder_svg_tag: 'product-card-placeholder' }}
+                {% endif %}
+              </div>
+              
+              <div class="product-card-metadata">
+                <h3 class="product-card-title">{{ product.title }}</h3>
+                <span class="product-card-price-tag">{{ product.price | money }}</span>
+              </div>
+            </a>
+          </div>
+        {% endfor %}
+
+      {% else %}
+        {% for i in (1..products_limit) %}
+          <div class="product-grid-item-card placeholder-card">
+            <div class="product-card-image-wrap">
+              {% capture current_index %}{% cycle 1, 2, 3, 4 %}{% endcapture %}
+              {{ 'product-' | append: current_index | placeholder_svg_tag: 'product-card-placeholder' }}
+            </div>
+            <div class="product-card-metadata">
+              <h3 class="product-card-title">Sample Product Title #{{ i }}</h3>
+              <span class="product-card-price-tag">$49.99</span>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    {% if section.settings.show_view_all and target_collection != blank %}
+      <div class="collection-footer-actions">
+        <a href="{{ target_collection.url }}" class="collection-view-all-btn">
+          View All Products
+        </a>
+      </div>
+    {% endif %}
+
+  </div>
+</section>
+
+<style>
+  #collection-{{ section.id }} {
+    background-color: {{ section.settings.background_color }};
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+  }
+  #collection-{{ section.id }} .collection-main-heading {
+    color: {{ section.settings.heading_color }};
+  }
+</style>
+
+<style>
+  /* Core Grid Layout Elements */
+  .featured-collection-section {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .collection-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .collection-header-row {
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+  .collection-main-heading {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+  
+  /* Adaptive Column Responsive Framework Grid rules */
+  .collection-products-grid {
+    display: grid;
+    gap: 2rem 1.5rem;
+    width: 100%;
+  }
+  @media screen and (min-width: 990px) {
+    .collection-products-grid.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .collection-products-grid.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .collection-products-grid.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+  }
+  @media screen and (max-width: 989px) and (min-width: 550px) {
+    .collection-products-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  }
+  @media screen and (max-width: 549px) {
+    .collection-products-grid { grid-template-columns: 1fr !important; gap: 1.5rem; }
+  }
+
+  /* Product Card Grid Item Elements UI styling definitions */
+  .product-grid-item-card {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .product-grid-item-card:hover {
+    transform: translateY(-4px);
+    curson: pointer;
+    box-shadow: 0 12px 24px rgba(70,57,51,0.08);
+  }
+  .product-card-link-mask {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .product-card-image-wrap {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    background-color: #F7F3EB;
+    overflow: hidden;
+  }
+  .product-card-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+  .product-grid-item-card:hover .product-card-img {
+    transform: scale(1.04);
+  }
+  .product-card-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    fill: #e2e2e2;
+    background: #f1f1f1;
+  }
+  .product-card-metadata {
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex-grow: 1;
+  }
+  .product-card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    color: #463933;
+    line-height: 1.4;
+  }
+  .product-card-price-tag {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #EC9343;
+  }
+
+  /* View All Button Elements Layout */
+  .collection-footer-actions {
+    margin-top: 3.5rem;
+    text-align: center;
+  }
+  .collection-view-all-btn {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    background-color: #463933;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    border-radius: 2rem;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+    box-shadow: 0 4px 12px rgba(70,57,51,0.15);
+  }
+  .collection-view-all-btn:hover {
+    background-color: #2A1B15;
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Featured Collection Grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content Selection"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Heading Title",
+      "default": "Featured Collection"
+    },
+    {
+      "type": "collection",
+      "id": "featured_collection",
+      "label": "Source Target Collection Selection"
+    },
+    {
+      "type": "header",
+      "content": "Grid Configuration Layout Properties"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4,
+      "label": "Maximum Product Inventory Count to List"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4,
+      "label": "Number of Grid Columns on Desktop viewports"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_all",
+      "default": true,
+      "label": "Enable \"View All\" Button Routing"
+    },
+    {
+      "type": "header",
+      "content": "Customization Color Palette"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Base Color Swatch",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Font Accent Fill",
+      "default": "#463933"
+    },
+    {
+      "type": "header",
+      "content": "Section Frame Padding Dimensions"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Top Padding Spacer Scale",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom Padding Spacer Scale",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Featured Collection Grid"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,391 @@
+<footer class="custom-site-footer" id="footer-{{ section.id }}">
+  <div class="footer-inner-wrapper footer-grid-{{ section.settings.columns_desktop }}">
+    {% for block in section.blocks %}
+      {% case block.type %}
+        {% when 'menu' %}
+          <div class="footer-column footer-nav-column" {{ block.shopify_attributes }}>
+            <h3 class="footer-heading">{{ block.settings.heading | escape }}</h3>
+
+            <ul class="footer-menu-list">
+              {% assign target_menu = linklists[block.settings.footer_menu] %}
+              {% if target_menu != blank %}
+                {% for link in target_menu.links %}
+                  <li>
+                    <a href="{{ link.url }}" class="footer-link">
+                      {{ link.title }}
+                    </a>
+                  </li>
+                {% endfor %}
+              {% else %}
+                <li><a href="#" class="footer-link">Sample Footer Link</a></li>
+                <li><a href="#" class="footer-link">Configure Menu Settings</a></li>
+              {% endif %}
+            </ul>
+          </div>
+
+        {% when 'newsletter' %}
+          <div class="footer-column footer-newsletter-column" {{ block.shopify_attributes }}>
+            <h3 class="footer-heading">{{ block.settings.heading | escape }}</h3>
+
+            {% if block.settings.subtext != blank %}
+              <p class="footer-subtext">
+                {{ block.settings.subtext | escape }}
+              </p>
+            {% endif %}
+
+            {% form 'customer', class: 'footer-newsletter-form' %}
+              <input type="hidden" name="contact[tags]" value="newsletter">
+
+              <div class="footer-input-group">
+                <input
+                  type="email"
+                  name="contact[email]"
+                  class="footer-email-input"
+                  placeholder="{{ block.settings.placeholder_text | escape }}"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  required
+                >
+                <button type="submit" class="footer-submit-btn" aria-label="Submit Form">&#8594;</button>
+              </div>
+
+              {% if form.posted_successfully? %}
+                <p class="footer-form-feedback success-msg">Thank you for subscribing!</p>
+              {% endif %}
+
+              {% if form.errors %}
+                <p class="footer-form-feedback error-msg">
+                  {{ form.errors.translated_fields.email | capitalize }}
+                  {{ form.errors.messages.email }}
+                </p>
+              {% endif %}
+            {% endform %}
+          </div>
+      {% endcase %}
+    {% endfor %}
+  </div>
+
+  <div class="footer-bottom-bar">
+    <p class="copyright-notice">&copy; {{ 'now' | date: '%Y' }}, {{ shop.name }}. All Rights Reserved.</p>
+  </div>
+</footer>
+
+<style>
+  #footer-{{ section.id }} {
+    --footer-bg:      {{ section.settings.color_background }};
+    --footer-text:    {{ section.settings.color_text }};
+    --footer-muted:   {{ section.settings.color_muted }};
+    --footer-accent:  {{ section.settings.color_accent }};
+    --footer-border:  {{ section.settings.color_border }};
+
+    background-color: var(--footer-bg);
+    color:            var(--footer-text);
+  }
+
+  #footer-{{ section.id }} .footer-heading {
+    color: var(--footer-text);
+  }
+
+  #footer-{{ section.id }} .footer-subtext,
+  #footer-{{ section.id }} .copyright-notice {
+    color: var(--footer-muted);
+  }
+
+  #footer-{{ section.id }} .footer-link {
+    color: var(--footer-muted);
+  }
+
+  #footer-{{ section.id }} .footer-link:hover {
+    color: var(--footer-accent);
+  }
+
+  #footer-{{ section.id }} .footer-input-group {
+    border-color: var(--footer-border);
+  }
+
+  #footer-{{ section.id }} .footer-input-group:focus-within {
+    border-color: var(--footer-text);
+  }
+
+  #footer-{{ section.id }} .footer-email-input {
+    color: var(--footer-text);
+  }
+
+  #footer-{{ section.id }} .footer-submit-btn {
+    color: var(--footer-muted);
+  }
+
+  #footer-{{ section.id }} .footer-submit-btn:hover {
+    color: var(--footer-text);
+  }
+
+  #footer-{{ section.id }} .footer-bottom-bar {
+    border-top-color: var(--footer-border);
+  }
+
+  .custom-site-footer {
+    padding: 5rem 0 2rem;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .footer-inner-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: grid;
+    gap: 4rem 2.5rem;
+  }
+
+  @media screen and (min-width: 990px) {
+    .footer-inner-wrapper.footer-grid-1 { grid-template-columns: 1fr; }
+    .footer-inner-wrapper.footer-grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .footer-inner-wrapper.footer-grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .footer-inner-wrapper.footer-grid-4 { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  @media screen and (min-width: 769px) and (max-width: 989px) {
+    .footer-inner-wrapper {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3rem;
+    }
+  }
+
+  .footer-column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .footer-heading {
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 0 0 1.75rem;
+  }
+
+  .footer-menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .footer-link {
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.25s ease, transform 0.25s ease;
+    display: inline-block;
+  }
+
+  .footer-link:hover {
+    transform: translateX(2px);
+  }
+
+  .footer-subtext {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0 0 1.5rem;
+  }
+
+  .footer-newsletter-form {
+    width: 100%;
+  }
+
+  .footer-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid;
+    transition: border-color 0.25s ease;
+  }
+
+  .footer-email-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 0.75rem 2.5rem 0.75rem 0;
+    font-size: 0.95rem;
+    outline: none;
+  }
+
+  .footer-email-input::placeholder {
+    opacity: 0.45;
+  }
+
+  .footer-submit-btn {
+    position: absolute;
+    right: 0;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.25s ease, transform 0.25s ease;
+  }
+
+  .footer-submit-btn:hover {
+    transform: translateX(3px);
+  }
+
+  .footer-form-feedback {
+    font-size: 0.85rem;
+    margin-top: 0.75rem;
+    font-weight: 500;
+  }
+
+  .footer-form-feedback.success-msg { color: #8fb89f; }
+  .footer-form-feedback.error-msg   { color: #d4845a; }
+
+  .footer-bottom-bar {
+    max-width: 1200px;
+    margin: 4rem auto 0;
+    padding: 1.5rem 2rem 0;
+    border-top: 1px solid;
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .copyright-notice {
+    font-size: 0.8rem;
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+
+  @media screen and (max-width: 768px) {
+    .custom-site-footer {
+      padding: 3.5rem 0 2rem;
+    }
+
+    .footer-inner-wrapper {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      padding: 0 1.5rem;
+    }
+
+    .footer-heading {
+      margin-bottom: 1.25rem;
+    }
+
+    .footer-bottom-bar {
+      margin-top: 3rem;
+      padding: 1.5rem 1.5rem 0;
+    }
+  }
+</style>
+
+{% schema %}
+{
+  "name": "Split Minimalist Footer",
+  "tag": "section",
+  "class": "shopify-section-footer",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2,
+      "label": "Desktop columns",
+      "info": "Number of columns displayed on screens wider than 990px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "color_background",
+      "label": "Background",
+      "default": "#1A1714"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "Headings and inputs",
+      "default": "#F9F6F1"
+    },
+    {
+      "type": "color",
+      "id": "color_muted",
+      "label": "Body text and icons",
+      "default": "#B8A99A"
+    },
+    {
+      "type": "color",
+      "id": "color_accent",
+      "label": "Hover accent",
+      "default": "#8B6F5E"
+    },
+    {
+      "type": "color",
+      "id": "color_border",
+      "label": "Borders and dividers",
+      "default": "#3A342F"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "menu",
+      "name": "Menu column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Column heading",
+          "default": "Quick Links"
+        },
+        {
+          "type": "link_list",
+          "id": "footer_menu",
+          "label": "Menu",
+          "default": "footer"
+        }
+      ]
+    },
+    {
+      "type": "newsletter",
+      "name": "Newsletter column",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Column heading",
+          "default": "Join Our Journal"
+        },
+        {
+          "type": "textarea",
+          "id": "subtext",
+          "label": "Description",
+          "default": "Subscribe to receive early access notification flags for new collection drops, private showroom events, and editorial insights."
+        },
+        {
+          "type": "text",
+          "id": "placeholder_text",
+          "label": "Input placeholder",
+          "default": "Enter your email address"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Split Minimalist Footer",
+      "blocks": [{ "type": "menu" }, { "type": "newsletter" }]
+    }
+  ]
+}
+{% endschema %}

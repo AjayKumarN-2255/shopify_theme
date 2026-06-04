@@ -1,0 +1,107 @@
+{%- if section.settings.show_announcement and section.settings.message_text != blank -%}
+  <div class="custom-announcement-bar" id="announcement-{{ section.id }}">
+    <div class="announcement-container-fluid">
+
+      {%- if section.settings.message_link != blank -%}
+        <a href="{{ section.settings.message_link }}" class="announcement-bar-link">
+          <span class="announcement-message-text">
+            {{ section.settings.message_text }}
+          </span>
+        </a>
+      {%- else -%}
+        <span class="announcement-message-text">
+          {{ section.settings.message_text }}
+        </span>
+      {%- endif -%}
+
+    </div>
+  </div>
+
+  <style>
+    #announcement-{{ section.id }} {
+      background-color: {{ section.settings.bg_color }};
+    }
+
+    #announcement-{{ section.id }} .announcement-message-text {
+      color: {{ section.settings.text_color }};
+    }
+  </style>
+{%- endif -%}
+
+<style>
+.custom-announcement-bar {
+  width: 100%;
+  padding: 0.65rem 1rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  z-index: 100;
+}
+
+.announcement-container-fluid {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.announcement-bar-link {
+  text-decoration: none;
+}
+
+.announcement-bar-link:hover .announcement-message-text {
+  opacity: 0.85;
+  text-decoration: underline;
+}
+
+.announcement-message-text {
+  font-size: 0.925rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  word-break: break-word;
+}
+</style>
+
+{% schema %}
+{
+  "name": "Announcement Bar",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "show_announcement",
+      "label": "Enable Announcement Bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "message_text",
+      "label": "Announcement Text",
+      "default": "Free shipping on orders over $50!"
+    },
+    {
+      "type": "url",
+      "id": "message_link",
+      "label": "Link Target (Optional)"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#FFFFFF"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Announcement Bar"
+    }
+  ]
+}
+{% endschema %}

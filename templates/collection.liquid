@@ -1,0 +1,252 @@
+<div class="collection-page-wrapper">
+  <div class="collection-container">
+    <header class="collection-header">
+      <h1 class="collection-main-title">{{ collection.title | escape }}</h1>
+
+      {% if collection.description != blank %}
+        <div class="collection-description-text">
+          {{ collection.description }}
+        </div>
+      {% endif %}
+    </header>
+
+    {% paginate collection.products by 12 %}
+      {% if collection.products_count > 0 %}
+        <div class="collection-products-grid">
+          {% for product in collection.products %}
+            <div class="product-grid-card">
+              <a href="{{ product.url | within: collection }}" class="product-image-anchor">
+                <div class="product-img-frame">
+                  {% if product.featured_media %}
+                    <img
+                      src="{{ product.featured_media.preview_image | image_url: width: 600 }}"
+                      alt="{{ product.title | escape }}"
+                      loading="lazy"
+                      class="grid-product-img"
+                    >
+
+                  {% elsif product.images.size > 0 %}
+                    <img
+                      src="{{ product.images.first | image_url: width: 600 }}"
+                      alt="{{ product.title | escape }}"
+                      loading="lazy"
+                      class="grid-product-img"
+                    >
+
+                  {% else %}
+                    {{ 'product-1' | placeholder_svg_tag: 'grid-product-placeholder' }}
+                  {% endif %}
+
+                  {% if product.compare_at_price > product.price %}
+                    <span class="product-sale-badge">Sale</span>
+                  {% endif %}
+                </div>
+              </a>
+
+              <div class="product-meta-details">
+                <h3 class="product-card-title">
+                  <a href="{{ product.url | within: collection }}">
+                    {{ product.title }}
+                  </a>
+                </h3>
+
+                <div class="product-card-pricing">
+                  {% if product.compare_at_price > product.price %}
+                    <span class="price-original-slashed">
+                      {{ product.compare_at_price | money }}
+                    </span>
+                    <span class="price-current-active sale-color">
+                      {{ product.price | money }}
+                    </span>
+                  {% else %}
+                    <span class="price-current-active">
+                      {{ product.price | money }}
+                    </span>
+                  {% endif %}
+                </div>
+
+                <a href="{{ product.url | within: collection }}" class="product-grid-view-btn"> View Product </a>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+      {% else %}
+        <div class="empty-collection-state">
+          <p>No products were found in this collection.</p>
+          <a href="/collections/all" class="product-grid-view-btn"> Browse All Products </a>
+        </div>
+      {% endif %}
+
+      {% if paginate.pages > 1 %}
+        <div class="collection-pagination">
+          {{ paginate | default_pagination: next: '→', prev: '←' }}
+        </div>
+      {% endif %}
+    {% endpaginate %}
+  </div>
+</div>
+
+<style>
+  .collection-page-wrapper {
+    background-color: #f7f3eb;
+    padding: 4rem 1.2rem;
+    width: 100%;
+  }
+
+  .collection-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .collection-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .collection-main-title {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #463933;
+  }
+
+  .collection-description-text {
+    font-size: 1rem;
+    color: #666;
+    margin-top: 0.5rem;
+  }
+
+  /* GRID */
+  .collection-products-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+
+  /* CARD */
+  .product-grid-card {
+    background: #fff;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+    transition: 0.25s ease;
+  }
+
+  .product-grid-card:hover {
+    transform: translateY(-5px);
+  }
+
+  /* IMAGE FRAME (SMALL HEIGHT) */
+  .product-img-frame {
+    position: relative;
+    width: 100%;
+    padding-top: 80%; /* smaller height */
+    overflow: hidden;
+  }
+
+  .grid-product-img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* SALE BADGE */
+  .product-sale-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #ec9343;
+    color: #fff;
+    padding: 3px 10px;
+    font-size: 11px;
+    border-radius: 20px;
+  }
+
+  /* CONTENT */
+  .product-meta-details {
+    padding: 0.9rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-card-title {
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .product-card-title a {
+    text-decoration: none;
+    color: #463933;
+  }
+
+  /* PRICES */
+  .product-card-pricing {
+    margin-bottom: 0.7rem;
+  }
+
+  .price-current-active {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  .price-original-slashed {
+    font-size: 0.85rem;
+    color: #999;
+    text-decoration: line-through;
+  }
+
+  /* BUTTON */
+  .product-grid-view-btn {
+    padding: 0.6rem;
+    font-size: 0.85rem;
+    border-radius: 1.2rem;
+    background: #463933;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+  }
+
+  /* PAGINATION */
+  .collection-pagination {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  /* EMPTY */
+  .empty-collection-state {
+    text-align: center;
+    padding: 4rem 1rem;
+  }
+
+  .collection-page-wrapper {
+    background-color: #F7F3EB;
+    padding: 4rem 1.2rem;
+    width: 100%;
+    min-height: 100vh; /* ✅ added */
+  }
+  
+  .grid-product-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block; /* ✅ prevents invisible image bug */
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 992px) {
+    .collection-products-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .collection-products-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
