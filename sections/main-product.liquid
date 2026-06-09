@@ -44,6 +44,27 @@
 
                 <h1 class="sp-title">{{ product.title }}</h1>
 
+                {% assign current_variant = product.selected_or_first_available_variant %}
+
+                {% for option in product.options_with_values %}
+                  <div class="variant-group">
+                    <label class="variant-label">{{ option.name }}</label>
+
+                    <div class="variant-values">
+                      {% for value in option.values %}
+                        {% assign option_index = forloop.parentloop.index0 %}
+
+                        <button
+                          type="button"
+                          class="variant-btn {% if current_variant.options[option_index] == value %}selected{% endif %}"
+                        >
+                          {{ value }}
+                        </button>
+                      {% endfor %}
+                    </div>
+                  </div>
+                {% endfor %}
+
                 <div class="sp-price-row">
                   {% if product.compare_at_price > product.price %}
                     <span class="sp-price sp-price--sale">{{ product.price | money }}</span>
@@ -453,6 +474,47 @@
       height: 60px;
     }
   }
+
+  .variant-group {
+    margin-bottom: 20px;
+  }
+
+  .variant-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .variant-values {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .variant-btn {
+    padding: 8px 16px;
+    border: 1px solid #dcdcdc;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .variant-btn:hover {
+    border-color: #000;
+  }
+
+  .variant-btn.active {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+  }
+
+  .variant-btn.selected {
+    background: #000;
+    color: #fff;
+    border-color: #000;
+  }
 </style>
 
 {% schema %}
@@ -490,7 +552,7 @@
     },
     {
       "type": "details",
-      "name": "Details",
+      "name": "Details"
     },
     {
       "type": "gallery",
@@ -504,3 +566,65 @@
   ]
 }
 {% endschema %}
+
+<script>
+  const product = {{ product | json }};
+  let selectedOptions = product.options.map(() => null);
+
+  const variantInput = document.querySelector('input[name="id"]');
+
+  // helper: find matching variant
+  function findVariant() {
+    return product.variants.find(variant =>
+      variant.options.every((opt, index) => opt === selectedOptions[index])
+    );
+  }
+
+  // update UI (price, hidden input, etc.)
+  function updateVariant() {
+    const variant = findVariant();
+    if (!variant) return;
+
+    // update hidden input for add to cart
+    if (variantInput) {
+      variantInput.value = variant.id;
+    }
+
+    console.log("Selected Variant:", variant);
+  }
+
+  // attach click events
+  document.querySelectorAll(".variant-group").forEach((group, groupIndex) => {
+    const buttons = group.querySelectorAll(".variant-btn");
+
+    buttons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const value = btn.innerText.trim();
+
+        // store selected value
+        selectedOptions[groupIndex] = value;
+
+        // UI update (selected class)
+        buttons.forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+
+        updateVariant();
+      });
+    });
+  });
+
+  // set default selected values (first available variant)
+  if (product.variants.length) {
+    selectedOptions = [...product.variants[0].options];
+
+    document.querySelectorAll(".variant-group").forEach((group, i) => {
+      const value = selectedOptions[i];
+      const btn = [...group.querySelectorAll(".variant-btn")]
+        .find(b => b.innerText.trim() === value);
+
+      if (btn) btn.classList.add("selected");
+    });
+
+    updateVariant();
+  }
+</script>

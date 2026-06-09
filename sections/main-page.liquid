@@ -1,35 +1,59 @@
 <section class="container">
-  {% for block in section.blocks %}
-    <div {{ block.shopify_attributes }}>
-      {% case block.type %}
-        {% when 'page_content' %}
-          <div class="page-content rte">
-            {{ page.content }}
-          </div>
-      {% endcase %}
+  {% if page.title != blank %}
+    <h1 class="page-title">
+      {{ page.title }}
+    </h1>
+  {% endif %}
+
+  {% if page.content != blank %}
+    <div class="page-content rte">
+      {{ page.content }}
     </div>
-  {% endfor %}
+  {% endif %}
+
   {% content_for 'blocks' %}
 </section>
+<style>
+  .section-main-page {
+    padding: 40px 20px;
+    min-height: 90vh;
+  }
+
+  .section-main-page .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .page-content.rte {
+    font-size: 16px;
+    line-height: 1.7;
+    margin-bottom: 30px;
+  }
+
+  .page-content.rte h1,
+  .page-content.rte h2 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+  }
+
+  .page-content.rte p {
+    margin-bottom: 12px;
+  }
+</style>
 
 {% schema %}
 {
   "name": "Main Page Builder",
-
+  "tag": "section",
+  "class": "section-main-page",
   "blocks": [
     {
-      "type": "page_content",
-      "name": "Page Content"
-    },
-    {
-      "type": "@theme",
-      "settings": []
+      "type": "@theme"
     }
   ],
-
   "presets": [
     {
-      "name": "Page Builder"
+      "name": "Main Page Builder"
     }
   ]
 }
