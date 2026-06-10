@@ -1,6 +1,5 @@
 {% assign all_images = product.images | slice: 0, section.settings.image_count %}
-{% assign first_image = all_images | first %}
-{% assign extra_images = all_images | slice: 1, all_images.size %}
+{% assign first_image = product.selected_or_first_available_variant.featured_image | default: all_images.first %}
 
 <div class="sp-wrap">
   {% comment %} Pass 1 — render main_image + details inside the shared sp-inner grid {% endcomment %}
@@ -19,6 +18,7 @@
             <div class="sp-gallery" {{ block.shopify_attributes }}>
               <div class="sp-img-frame">
                 <img
+                  id="MainProductImage"
                   src="{{ first_image | image_url: width: 900 }}"
                   alt="{{ first_image.alt | escape }}"
                   width="900"
@@ -47,7 +47,6 @@
                 {% assign current_variant = product.selected_or_first_available_variant %}
 
                 {% if current_variant.options.first == 'Default Title' %}
-
                   {% render 'no-variant' %}
 
                 {% else %}
@@ -72,16 +71,10 @@
                 {% endif %}
 
                 <div class="sp-price-row">
-                  {% if product.compare_at_price > product.price %}
-                    <span class="sp-price sp-price--sale">{{ product.price | money }}</span>
-                    <span class="sp-price sp-price--compare">{{ product.compare_at_price | money }}</span>
-                    <span class="sp-badge">Sale</span>
-                  {% else %}
-                    <span class="sp-price">{{ product.price | money }}</span>
-                  {% endif %}
+                  <span class="sp-price" id="ProductPrice">
+                    {{ product.price | money }}
+                  </span>
                 </div>
-
-                <div class="sp-rule"></div>
 
                 {% if section.settings.show_description and product.description != blank %}
                   <div class="sp-description">
@@ -135,19 +128,21 @@
 
   {% comment %} Pass 2 — render gallery block below sp-inner {% endcomment %}
   {% for block in section.blocks %}
-    {% if block.type == 'gallery' and extra_images.size > 0 %}
+    {% if block.type == 'gallery' %}
       <div class="sp-extra-grid" {{ block.shopify_attributes }}>
-        {% for image in extra_images %}
-          <div class="sp-extra-frame">
-            <img
-              src="{{ image | image_url: width: 300, height: 300, crop: 'center' }}"
-              alt="{{ image.alt | escape }}"
-              width="300"
-              height="300"
-              loading="lazy"
-            >
-            <div class="sp-img-shine"></div>
-          </div>
+        {% for image in all_images %}
+          {% unless image.id == first_image.id %}
+            <div class="sp-extra-frame">
+              <img
+                src="{{ image | image_url: width: 300, height: 300, crop: 'center' }}"
+                alt="{{ image.alt | escape }}"
+                width="300"
+                height="300"
+                loading="lazy"
+              >
+              <div class="sp-img-shine"></div>
+            </div>
+          {% endunless %}
         {% endfor %}
       </div>
     {% endif %}
@@ -598,6 +593,23 @@
     // update hidden input for add to cart
     if (variantInput) {
       variantInput.value = variant.id;
+    }
+
+     // Update price
+  const priceEl = document.getElementById("ProductPrice");
+
+  if (priceEl) {
+    priceEl.textContent = `₹${(variant.price / 100).toFixed(2)}`;
+  }
+
+    //update selected image
+    if (variant.featured_image) {
+      const img = document.getElementById("MainProductImage");
+
+      if (img) {
+        img.src = variant.featured_image.src;
+        img.alt = variant.featured_image.alt || "";
+      }
     }
 
     console.log("Selected Variant:", variant);
