@@ -46,24 +46,30 @@
 
                 {% assign current_variant = product.selected_or_first_available_variant %}
 
-                {% for option in product.options_with_values %}
-                  <div class="variant-group">
-                    <label class="variant-label">{{ option.name }}</label>
+                {% if current_variant.options.first == 'Default Title' %}
 
-                    <div class="variant-values">
-                      {% for value in option.values %}
-                        {% assign option_index = forloop.parentloop.index0 %}
+                  {% render 'no-variant' %}
 
-                        <button
-                          type="button"
-                          class="variant-btn {% if current_variant.options[option_index] == value %}selected{% endif %}"
-                        >
-                          {{ value }}
-                        </button>
-                      {% endfor %}
+                {% else %}
+                  {% for option in product.options_with_values %}
+                    <div class="variant-group">
+                      <label class="variant-label">{{ option.name }}</label>
+
+                      <div class="variant-values">
+                        {% for value in option.values %}
+                          {% assign option_index = forloop.parentloop.index0 %}
+
+                          <button
+                            type="button"
+                            class="variant-btn {% if current_variant.options[option_index] == value %}selected{% endif %}"
+                          >
+                            {{ value }}
+                          </button>
+                        {% endfor %}
+                      </div>
                     </div>
-                  </div>
-                {% endfor %}
+                  {% endfor %}
+                {% endif %}
 
                 <div class="sp-price-row">
                   {% if product.compare_at_price > product.price %}
@@ -569,9 +575,13 @@
 
 <script>
   const product = {{ product | json }};
+
+  const params = new URLSearchParams(window.location.search);
+  const variantId = params.get("variant");
   let selectedOptions = product.options.map(() => null);
 
   const variantInput = document.querySelector('input[name="id"]');
+
 
   // helper: find matching variant
   function findVariant() {
@@ -615,7 +625,20 @@
 
   // set default selected values (first available variant)
   if (product.variants.length) {
-    selectedOptions = [...product.variants[0].options];
+    let defaultVariant = null;
+
+    // check URL variant first
+    if (variantId) {
+      defaultVariant = product.variants.find(
+        v => v.id === Number(variantId)
+      );
+    }
+
+    if (!defaultVariant) {
+      defaultVariant = product.variants[0];
+    }
+
+    selectedOptions = [...defaultVariant.options];
 
     document.querySelectorAll(".variant-group").forEach((group, i) => {
       const value = selectedOptions[i];
